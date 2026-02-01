@@ -31,7 +31,7 @@ func load_texture_from_path(path: String) -> Texture2D:
 	if path.begins_with("res://"):
 		return load(path)
 
-	# Otherwise, load from filesystem
+	# Handle user:// and absolute filesystem paths
 	if FileAccess.file_exists(path):
 		var image = Image.new()
 		var err = image.load(path)
@@ -39,5 +39,7 @@ func load_texture_from_path(path: String) -> Texture2D:
 			return ImageTexture.create_from_image(image)
 		else:
 			push_error("Failed to load image from " + path + ": " + str(err))
+	else:
+		push_error("File does not exist: " + path)
 
 	return null

@@ -116,18 +116,25 @@ func _on_theme_dialog_dir_selected(path: String) -> void:
 	var validation = validate_theme_directory(path)
 
 	if validation.valid:
-		GameSettings.custom_theme_path = path
-		GameSettings.save_settings()
-		load_theme_logo()
+		# Import theme to app's private directory
+		var import_result = import_theme_to_user_dir(path)
+		if import_result.success:
+			GameSettings.custom_theme_path = "user://themes/custom"
+			GameSettings.save_settings()
+			load_theme_logo()
 
-		# Update max pairs based on available cards
-		max_pairs = validation.card_count
-		pairs_slider.tick_count = max_pairs - 1
-		pairs_slider.max_value = max_pairs
-		if selected_pairs > max_pairs:
-			pairs_slider.value = max_pairs
-			selected_pairs = max_pairs
-			update_label()
+			# Update max pairs based on available cards
+			max_pairs = validation.card_count
+			pairs_slider.tick_count = max_pairs - 1
+			pairs_slider.max_value = max_pairs
+			if selected_pairs > max_pairs:
+				pairs_slider.value = max_pairs
+				selected_pairs = max_pairs
+				update_label()
+
+			show_success_dialog("Theme imported successfully! Found " + str(validation.card_count) + " card images.")
+		else:
+			show_error_dialog("Failed to import theme: " + import_result.error)
 	else:
 		show_error_dialog(validation.error)
 
@@ -156,6 +163,99 @@ func load_theme_logo() -> void:
 		var uniform_scale = min(scale_x, scale_y)
 		theme_logo.scale = Vector2(uniform_scale, uniform_scale)
 
+func import_theme_to_user_dir(source_path: String) -> Dictionary:
+	var result = {
+		"success": false,
+		"error": ""
+	}
+
+	var dest_path = "user://themes/custom"
+
+	# Create destination directories
+	if not DirAccess.dir_exists_absolute("user://themes"):
+		var err = DirAccess.make_dir_absolute("user://themes")
+		if err != OK:
+			result.error = "Failed to create themes directory: " + str(err)
+			return result
+
+	# Remove existing custom theme directory if it exists
+	if DirAccess.dir_exists_absolute(dest_path):
+		remove_directory_recursive(dest_path)
+
+	# Create new custom theme directory
+	var err = DirAccess.make_dir_absolute(dest_path)
+	if err != OK:
+		result.error = "Failed to create custom theme directory: " + str(err)
+		return result
+
+	# Copy theme-logo.png
+	var logo_src = source_path + "/theme-logo.png"
+	var logo_dest = dest_path + "/theme-logo.png"
+	err = copy_file(logo_src, logo_dest)
+	if err != OK:
+		result.error = "Failed to copy theme-logo.png: " + str(err)
+		return result
+
+	# Create cards subdirectory
+	var cards_dest = dest_path + "/cards"
+	err = DirAccess.make_dir_absolute(cards_dest)
+	if err != OK:
+		result.error = "Failed to create cards directory: " + str(err)
+		return result
+
+	# Copy all card images
+	var cards_src = source_path + "/cards"
+	var dir = DirAccess.open(cards_src)
+	if dir:
+		dir.list_dir_begin()
+		var file_name = dir.get_next()
+
+		while file_name != "":
+			if not dir.current_is_dir() and file_name.ends_with(".png"):
+				var src_file = cards_src + "/" + file_name
+				var dest_file = cards_dest + "/" + file_name
+				err = copy_file(src_file, dest_file)
+				if err != OK:
+					result.error = "Failed to copy " + file_name + ": " + str(err)
+					return result
+			file_name = dir.get_next()
+		dir.list_dir_end()
+	else:
+		result.error = "Failed to open source cards directory"
+		return result
+
+	result.success = true
+	return result
+
+func copy_file(source: String, dest: String) -> int:
+	var source_file = FileAccess.open(source, FileAccess.READ)
+	if not source_file:
+		return FileAccess.get_open_error()
+
+	var dest_file = FileAccess.open(dest, FileAccess.WRITE)
+	if not dest_file:
+		return FileAccess.get_open_error()
+
+	dest_file.store_buffer(source_file.get_buffer(source_file.get_length()))
+	return OK
+
+func remove_directory_recursive(path: String) -> void:
+	var dir = DirAccess.open(path)
+	if dir:
+		dir.list_dir_begin()
+		var file_name = dir.get_next()
+
+		while file_name != "":
+			var file_path = path + "/" + file_name
+			if dir.current_is_dir():
+				remove_directory_recursive(file_path)
+			else:
+				DirAccess.remove_absolute(file_path)
+			file_name = dir.get_next()
+		dir.list_dir_end()
+
+		DirAccess.remove_absolute(path)
+
 func _on_reset_theme_button_pressed() -> void:
 	# Clear the custom theme
 	GameSettings.custom_theme_path = ""
@@ -177,6 +277,15 @@ func show_error_dialog(message: String) -> void:
 	var dialog = AcceptDialog.new()
 	dialog.dialog_text = message
 	dialog.title = "Invalid Theme Directory"
+	add_child(dialog)
+	dialog.popup_centered()
+	await dialog.confirmed
+	dialog.queue_free()
+
+func show_success_dialog(message: String) -> void:
+	var dialog = AcceptDialog.new()
+	dialog.dialog_text = message
+	dialog.title = "Success"
 	add_child(dialog)
 	dialog.popup_centered()
 	await dialog.confirmed

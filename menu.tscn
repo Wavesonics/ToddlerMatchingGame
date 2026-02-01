@@ -118,7 +118,7 @@ ticks_on_borders = true
 [node name="ThemeButton" type="Button" parent="Panel/VBoxContainer" unique_id=-748289894]
 layout_mode = 2
 size_flags_horizontal = 4
-text = "Select Custom Theme"
+text = "Import Custom Theme"
 
 [node name="ResetThemeButton" type="Button" parent="Panel/VBoxContainer" unique_id=1234567891]
 layout_mode = 2
@@ -145,9 +145,9 @@ position = Vector2(245.00002, 221)
 
 [node name="ThemeFileDialog" type="FileDialog" parent="." unique_id=1234567890]
 unique_name_in_owner = true
-title = "Open a Directory"
+title = "Select Theme Folder to Import"
 size = Vector2i(600, 400)
-ok_button_text = "Select Folder"
+ok_button_text = "Import"
 file_mode = 2
 access = 1
 use_native_dialog = true

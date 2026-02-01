@@ -120,6 +120,11 @@ layout_mode = 2
 size_flags_horizontal = 4
 text = "Select Custom Theme"
 
+[node name="ResetThemeButton" type="Button" parent="Panel/VBoxContainer" unique_id=1234567891]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Reset to Default Theme"
+
 [node name="StartButton" type="Button" parent="Panel/VBoxContainer" unique_id=280689421]
 layout_mode = 2
 size_flags_horizontal = 4
@@ -149,6 +154,7 @@ use_native_dialog = true
 
 [connection signal="value_changed" from="Panel/VBoxContainer/PairsSlider" to="." method="_on_pairs_slider_value_changed"]
 [connection signal="pressed" from="Panel/VBoxContainer/ThemeButton" to="." method="_on_theme_button_pressed"]
+[connection signal="pressed" from="Panel/VBoxContainer/ResetThemeButton" to="." method="_on_reset_theme_button_pressed"]
 [connection signal="pressed" from="Panel/VBoxContainer/StartButton" to="." method="_on_start_button_pressed"]
 [connection signal="pressed" from="Panel/VBoxContainer/ExitButton" to="." method="_on_exit_button_pressed"]
 [connection signal="dir_selected" from="ThemeFileDialog" to="." method="_on_theme_dialog_dir_selected"]

@@ -148,6 +148,23 @@ func load_theme_logo() -> void:
 		var uniform_scale = min(scale_x, scale_y)
 		theme_logo.scale = Vector2(uniform_scale, uniform_scale)
 
+func _on_reset_theme_button_pressed() -> void:
+	# Clear the custom theme
+	GameSettings.custom_theme_path = ""
+	GameSettings.save_settings()
+
+	# Reload the theme logo to default
+	load_theme_logo()
+
+	# Update max pairs based on default card count
+	max_pairs = count_available_images()
+	pairs_slider.tick_count = max_pairs - 1
+	pairs_slider.max_value = max_pairs
+	if selected_pairs > max_pairs:
+		pairs_slider.value = max_pairs
+		selected_pairs = max_pairs
+		update_label()
+
 func show_error_dialog(message: String) -> void:
 	var dialog = AcceptDialog.new()
 	dialog.dialog_text = message

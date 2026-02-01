@@ -79,34 +79,38 @@ func setup_game() -> void:
 
 func load_card_images() -> Array:
 	var images = []
-	var cards_path = ""
 	var use_custom_theme = GameSettings.custom_theme_path != ""
 
 	if use_custom_theme:
-		cards_path = GameSettings.custom_theme_path + "/cards"
-	else:
-		cards_path = "res://cards"
+		# For custom themes, use directory listing (only works on filesystem paths)
+		var cards_path = GameSettings.custom_theme_path + "/cards"
+		var dir = DirAccess.open(cards_path)
 
-	var dir = DirAccess.open(cards_path)
+		if dir:
+			dir.list_dir_begin()
+			var file_name = dir.get_next()
 
-	if dir:
-		dir.list_dir_begin()
-		var file_name = dir.get_next()
-
-		while file_name != "":
-			if not dir.current_is_dir() and file_name.ends_with(".png") and not file_name.ends_with(".import"):
-				var texture = null
-
-				if use_custom_theme:
+			while file_name != "":
+				if not dir.current_is_dir() and file_name.ends_with(".png") and not file_name.ends_with(".import"):
 					var full_path = cards_path + "/" + file_name
-					texture = GameSettings.load_texture_from_path(full_path)
-				else:
-					texture = load("res://cards/" + file_name)
-
+					var texture = GameSettings.load_texture_from_path(full_path)
+					if texture:
+						images.append(texture)
+				file_name = dir.get_next()
+			dir.list_dir_end()
+	else:
+		# For built-in cards, use sequential naming (works in exported builds)
+		# Try to load card_00.png, card_01.png, etc. until one doesn't exist
+		var i = 0
+		while true:
+			var card_path = "res://cards/card_%02d.png" % i
+			if ResourceLoader.exists(card_path):
+				var texture = load(card_path)
 				if texture:
 					images.append(texture)
-			file_name = dir.get_next()
-		dir.list_dir_end()
+				i += 1
+			else:
+				break
 
 	return images
 

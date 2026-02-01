@@ -19,25 +19,33 @@ func _ready() -> void:
 
 func count_available_images() -> int:
 	var count = 0
-	var cards_path = ""
 
 	# Check if custom theme is set
 	if GameSettings.custom_theme_path != "":
-		cards_path = GameSettings.custom_theme_path + "/cards"
+		# For custom themes, use directory listing (only works on filesystem paths)
+		var cards_path = GameSettings.custom_theme_path + "/cards"
+		var dir = DirAccess.open(cards_path)
+
+		if dir:
+			dir.list_dir_begin()
+			var file_name = dir.get_next()
+
+			while file_name != "":
+				if not dir.current_is_dir() and file_name.ends_with(".png") and not file_name.ends_with(".import"):
+					count += 1
+				file_name = dir.get_next()
+			dir.list_dir_end()
 	else:
-		cards_path = "res://cards"
-
-	var dir = DirAccess.open(cards_path)
-
-	if dir:
-		dir.list_dir_begin()
-		var file_name = dir.get_next()
-
-		while file_name != "":
-			if not dir.current_is_dir() and file_name.ends_with(".png") and not file_name.ends_with(".import"):
+		# For built-in cards, use sequential naming (works in exported builds)
+		# Try to load card_00.png, card_01.png, etc. until one doesn't exist
+		var i = 0
+		while true:
+			var card_path = "res://cards/card_%02d.png" % i
+			if ResourceLoader.exists(card_path):
 				count += 1
-			file_name = dir.get_next()
-		dir.list_dir_end()
+				i += 1
+			else:
+				break
 
 	return count
 

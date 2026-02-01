@@ -28,9 +28,13 @@ func _ready() -> void:
 		card_background.set_surface_override_material(0, material.duplicate())
 
 	# Apply stored textures if setup was called before ready
-	if front_texture and back_texture:
+	if front_texture:
 		front_sprite.texture = front_texture
-		back_sprite.texture = back_texture
+		if back_texture:
+			back_sprite.texture = back_texture
+			back_sprite.visible = true
+		else:
+			back_sprite.visible = false
 		card_3d.rotation_degrees.y = 0
 	setup_complete = true
 
@@ -44,7 +48,11 @@ func setup(id: int, front: Texture2D, back: Texture2D) -> void:
 	# If already ready, apply textures immediately
 	if setup_complete:
 		front_sprite.texture = front_texture
-		back_sprite.texture = back_texture
+		if back_texture:
+			back_sprite.texture = back_texture
+			back_sprite.visible = true
+		else:
+			back_sprite.visible = false
 		card_3d.rotation_degrees.y = 0
 
 func flip_up() -> void:

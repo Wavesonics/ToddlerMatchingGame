@@ -62,8 +62,10 @@ func setup_game() -> void:
 	grid_rows = dimensions.y
 	grid_container.columns = grid_columns
 
-	# Load back texture (use first image as back for now)
-	var back_texture = load("res://card-back.png")
+	# Load back texture if it exists
+	var back_texture = null
+	if FileAccess.file_exists("res://card-back.png"):
+		back_texture = load("res://card-back.png")
 
 	# Create grid
 	for i in range(total_cards):

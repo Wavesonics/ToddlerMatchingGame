@@ -1,0 +1,35 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="Paw Frozen Match"
+config/description="Paw patrol and Frozen matching game"
+config/version="1.0"
+run/main_scene="uid://cuw8o2nqmlxbt"
+config/features=PackedStringArray("4.6", "Forward Plus")
+config/icon="uid://c36f77dr11ivx"
+
+[autoload]
+
+GameSettings="*res://game_settings.gd"
+
+[display]
+
+window/stretch/mode="canvas_items"
+
+[physics]
+
+3d/physics_engine="Jolt Physics"
+
+[rendering]
+
+rendering_device/driver.windows="d3d12"
+environment/defaults/default_clear_color=Color(0, 0, 0, 1)

@@ -1,0 +1,167 @@
+[gd_scene format=3 uid="uid://cde6vnajituyv"]
+
+[ext_resource type="Script" uid="uid://bpdop3sr4qc5s" path="res://matching_game.gd" id="1_v76ue"]
+[ext_resource type="AudioStream" uid="uid://d8k4fx8prvs0" path="res://match.mp3" id="4_match"]
+[ext_resource type="AudioStream" uid="uid://c2qfmt16si1kd" path="res://victory.mp3" id="5_victory"]
+
+[sub_resource type="Gradient" id="Gradient_background"]
+colors = PackedColorArray(0, 0, 0, 1, 0.13245952, 0.024776218, 0.20744452, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_background"]
+gradient = SubResource("Gradient_background")
+width = 256
+height = 256
+fill_to = Vector2(0, 1)
+
+[sub_resource type="Gradient" id="Gradient_fireworks"]
+offsets = PackedFloat32Array(0, 0.5, 1)
+colors = PackedColorArray(1, 0.9, 0.2, 1, 1, 0.3, 0.3, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_fireworks"]
+gradient = SubResource("Gradient_fireworks")
+width = 16
+height = 16
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+
+[sub_resource type="Curve" id="Curve_fireworks"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_fireworks"]
+curve = SubResource("Curve_fireworks")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_fireworks"]
+particle_flag_disable_z = true
+emission_shape = 1
+emission_sphere_radius = 10.0
+direction = Vector3(0, -1, 0)
+spread = 180.0
+initial_velocity_min = 200.0
+initial_velocity_max = 400.0
+angular_velocity_min = -200.0
+angular_velocity_max = 200.0
+gravity = Vector3(0, 300, 0)
+scale_min = 0.2
+scale_max = 0.6
+scale_curve = SubResource("CurveTexture_fireworks")
+color_ramp = SubResource("GradientTexture2D_fireworks")
+
+[node name="MatchingGame" type="Node2D" unique_id=1240325419]
+script = ExtResource("1_v76ue")
+
+[node name="Background" type="TextureRect" parent="." unique_id=1753818289]
+offset_right = 1152.0
+offset_bottom = 648.0
+texture = SubResource("GradientTexture2D_background")
+
+[node name="EndGameButton" type="Button" parent="." unique_id=1865132564]
+offset_left = 1050.0
+offset_top = 20.0
+offset_right = 1130.0
+offset_bottom = 51.0
+text = "X"
+
+[node name="ScoreLabel" type="Label" parent="." unique_id=1642637975]
+unique_name_in_owner = true
+offset_left = 50.0
+offset_top = 20.0
+offset_right = 200.0
+offset_bottom = 43.0
+text = "Matches: 0"
+
+[node name="FlipsLabel" type="Label" parent="." unique_id=927436724]
+unique_name_in_owner = true
+offset_left = 50.0
+offset_top = 50.0
+offset_right = 200.0
+offset_bottom = 73.0
+text = "Flips: 0"
+
+[node name="GridContainer" type="GridContainer" parent="." unique_id=1908974299]
+unique_name_in_owner = true
+offset_left = 244.0
+offset_top = 35.0
+offset_right = 967.0
+offset_bottom = 575.0
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+columns = 6
+
+[node name="MatchSound" type="AudioStreamPlayer" parent="." unique_id=1234567892]
+unique_name_in_owner = true
+stream = ExtResource("4_match")
+
+[node name="VictorySound" type="AudioStreamPlayer" parent="." unique_id=1234567893]
+unique_name_in_owner = true
+stream = ExtResource("5_victory")
+
+[node name="Fireworks1" type="GPUParticles2D" parent="." unique_id=1234567894]
+unique_name_in_owner = true
+position = Vector2(288, 500)
+emitting = false
+amount = 100
+texture = SubResource("GradientTexture2D_fireworks")
+lifetime = 2.0
+one_shot = true
+explosiveness = 0.9
+process_material = SubResource("ParticleProcessMaterial_fireworks")
+
+[node name="Fireworks2" type="GPUParticles2D" parent="." unique_id=1234567895]
+unique_name_in_owner = true
+position = Vector2(576, 450)
+emitting = false
+amount = 100
+texture = SubResource("GradientTexture2D_fireworks")
+lifetime = 2.0
+one_shot = true
+explosiveness = 0.9
+process_material = SubResource("ParticleProcessMaterial_fireworks")
+
+[node name="Fireworks3" type="GPUParticles2D" parent="." unique_id=1234567896]
+unique_name_in_owner = true
+position = Vector2(864, 500)
+emitting = false
+amount = 100
+texture = SubResource("GradientTexture2D_fireworks")
+lifetime = 2.0
+one_shot = true
+explosiveness = 0.9
+process_material = SubResource("ParticleProcessMaterial_fireworks")
+
+[node name="VictoryPanel" type="Panel" parent="." unique_id=1190352036]
+unique_name_in_owner = true
+visible = false
+offset_left = 350.0
+offset_top = 200.0
+offset_right = 800.0
+offset_bottom = 400.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VictoryPanel" unique_id=2009910644]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="VictoryLabel" type="Label" parent="VictoryPanel/VBoxContainer" unique_id=2139013038]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Victory!"
+horizontal_alignment = 1
+
+[node name="StatsLabel" type="Label" parent="VictoryPanel/VBoxContainer" unique_id=767364731]
+unique_name_in_owner = true
+layout_mode = 2
+text = "You found all matches!"
+horizontal_alignment = 1
+
+[node name="MenuButton" type="Button" parent="VictoryPanel/VBoxContainer" unique_id=663645916]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Return to Menu"
+
+[connection signal="pressed" from="EndGameButton" to="." method="_on_end_game_button_pressed"]
+[connection signal="pressed" from="VictoryPanel/VBoxContainer/MenuButton" to="." method="_on_menu_button_pressed"]

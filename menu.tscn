@@ -1,0 +1,140 @@
+[gd_scene format=3 uid="uid://cuw8o2nqmlxbt"]
+
+[ext_resource type="Script" uid="uid://hsjoa01ipqv2" path="res://menu.gd" id="1_lti8b"]
+[ext_resource type="Texture2D" uid="uid://miw6s853xjdq" path="res://card-back.png" id="2_ouk20"]
+
+[sub_resource type="Gradient" id="Gradient_background"]
+colors = PackedColorArray(0, 0, 0, 1, 0.2, 0.05, 0.3, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_background"]
+gradient = SubResource("Gradient_background")
+width = 256
+height = 256
+fill_to = Vector2(0, 1)
+
+[sub_resource type="Gradient" id="Gradient_1"]
+offsets = PackedFloat32Array(0, 0.5, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0.8, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_1"]
+gradient = SubResource("Gradient_1")
+width = 32
+height = 32
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_1"]
+particle_flag_disable_z = true
+emission_shape = 3
+emission_box_extents = Vector3(600, 1, 1)
+direction = Vector3(0, 1, 0)
+spread = 15.0
+initial_velocity_min = 50.0
+initial_velocity_max = 100.0
+angular_velocity_min = -45.0
+angular_velocity_max = 45.0
+gravity = Vector3(0, 98, 0)
+scale_min = 0.075
+scale_max = 0.375
+
+[sub_resource type="Curve" id="Curve_2"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.1, 1), 0.0, 0.0, 0, 0, Vector2(0.9, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 4
+
+[sub_resource type="CurveTexture" id="CurveTexture_1"]
+curve = SubResource("Curve_2")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_2"]
+particle_flag_disable_z = true
+emission_shape = 3
+emission_box_extents = Vector3(600, 1, 1)
+direction = Vector3(0, 1, 0)
+spread = 10.0
+initial_velocity_min = 30.0
+initial_velocity_max = 60.0
+angular_velocity_min = -30.0
+angular_velocity_max = 30.0
+gravity = Vector3(0, 50, 0)
+scale_min = 0.5
+alpha_curve = SubResource("CurveTexture_1")
+
+[node name="Menu" type="Node2D" unique_id=1117514491]
+script = ExtResource("1_lti8b")
+
+[node name="Background" type="TextureRect" parent="." unique_id=1386893662]
+offset_right = 1152.0
+offset_bottom = 648.0
+texture = SubResource("GradientTexture2D_background")
+
+[node name="SnowParticles" type="GPUParticles2D" parent="." unique_id=377513179]
+position = Vector2(576, -10)
+amount = 100
+texture = SubResource("GradientTexture2D_1")
+lifetime = 8.0
+preprocess = 2.0
+process_material = SubResource("ParticleProcessMaterial_1")
+
+[node name="SnowParticles2" type="GPUParticles2D" parent="." unique_id=1399207002]
+position = Vector2(576, -10)
+amount = 50
+texture = SubResource("GradientTexture2D_1")
+lifetime = 12.0
+preprocess = 3.0
+process_material = SubResource("ParticleProcessMaterial_2")
+
+[node name="Panel" type="PanelContainer" parent="." unique_id=277443403]
+offset_left = 502.0
+offset_top = 199.0
+offset_right = 780.0
+offset_bottom = 455.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel" unique_id=2002896139]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="TitleLabel" type="Label" parent="Panel/VBoxContainer" unique_id=1402109936]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Matching Game"
+horizontal_alignment = 1
+
+[node name="PairsLabel" type="Label" parent="Panel/VBoxContainer" unique_id=327145083]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Pairs: 8 (16 cards)"
+horizontal_alignment = 1
+
+[node name="PairsSlider" type="HSlider" parent="Panel/VBoxContainer" unique_id=330818102]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+min_value = 2.0
+max_value = 18.0
+value = 8.0
+ticks_on_borders = true
+
+[node name="StartButton" type="Button" parent="Panel/VBoxContainer" unique_id=280689421]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Start Game"
+
+[node name="Spacer" type="Control" parent="Panel/VBoxContainer" unique_id=5844131]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+
+[node name="ExitButton" type="Button" parent="Panel/VBoxContainer" unique_id=1013701361]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Exit Game"
+
+[node name="CardBack" type="Sprite2D" parent="." unique_id=1121035228]
+position = Vector2(212, 206)
+scale = Vector2(0.3642578, 0.3642578)
+texture = ExtResource("2_ouk20")
+
+[connection signal="value_changed" from="Panel/VBoxContainer/PairsSlider" to="." method="_on_pairs_slider_value_changed"]
+[connection signal="pressed" from="Panel/VBoxContainer/StartButton" to="." method="_on_start_button_pressed"]
+[connection signal="pressed" from="Panel/VBoxContainer/ExitButton" to="." method="_on_exit_button_pressed"]

@@ -1,3 +1,28 @@
 # Godot 4+ specific ignores
 .godot/
 /android/
+
+# Godot-specific
+export_presets.cfg
+*.translation
+
+# Editor backup files
+*~
+*.swp
+*.swo
+*#
+
+# OS-specific
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+
+# Build/export folders
+/export/
+/build/
+
+# Logs
+*.log

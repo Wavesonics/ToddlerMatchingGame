@@ -77,7 +77,15 @@ func setup_game() -> void:
 
 func load_card_images() -> Array:
 	var images = []
-	var dir = DirAccess.open("res://cards")
+	var cards_path = ""
+	var use_custom_theme = GameSettings.custom_theme_path != ""
+
+	if use_custom_theme:
+		cards_path = GameSettings.custom_theme_path + "/cards"
+	else:
+		cards_path = "res://cards"
+
+	var dir = DirAccess.open(cards_path)
 
 	if dir:
 		dir.list_dir_begin()
@@ -85,7 +93,14 @@ func load_card_images() -> Array:
 
 		while file_name != "":
 			if not dir.current_is_dir() and file_name.ends_with(".png") and not file_name.ends_with(".import"):
-				var texture = load("res://cards/" + file_name)
+				var texture = null
+
+				if use_custom_theme:
+					var full_path = cards_path + "/" + file_name
+					texture = GameSettings.load_texture_from_path(full_path)
+				else:
+					texture = load("res://cards/" + file_name)
+
 				if texture:
 					images.append(texture)
 			file_name = dir.get_next()

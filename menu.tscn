@@ -63,6 +63,8 @@ script = ExtResource("1_lti8b")
 [node name="Background" type="TextureRect" parent="." unique_id=1386893662]
 offset_right = 1152.0
 offset_bottom = 648.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
 texture = SubResource("GradientTexture2D_background")
 
 [node name="SnowParticles" type="GPUParticles2D" parent="." unique_id=377513179]
@@ -80,6 +82,38 @@ texture = SubResource("GradientTexture2D_1")
 lifetime = 12.0
 preprocess = 3.0
 process_material = SubResource("ParticleProcessMaterial_2")
+
+[node name="ExitContainer" type="PanelContainer" parent="." unique_id=1297991826]
+offset_left = 978.0
+offset_top = 23.0
+offset_right = 1138.0
+offset_bottom = 115.0
+
+[node name="ExitButton" type="Button" parent="ExitContainer" unique_id=1013701361]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Exit Game"
+
+[node name="ThemeContainer" type="PanelContainer" parent="." unique_id=1723696371]
+offset_left = 929.0
+offset_top = 513.0
+offset_right = 1155.0
+offset_bottom = 617.0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ThemeContainer" unique_id=1809381338]
+layout_mode = 2
+
+[node name="ThemeButton" type="Button" parent="ThemeContainer/VBoxContainer" unique_id=-748289894]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Import Custom Theme"
+
+[node name="ResetThemeButton" type="Button" parent="ThemeContainer/VBoxContainer" unique_id=1234567891]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Reset to Default Theme"
 
 [node name="Panel" type="PanelContainer" parent="." unique_id=277443403]
 offset_left = 502.0
@@ -115,29 +149,14 @@ max_value = 18.0
 value = 8.0
 ticks_on_borders = true
 
-[node name="ThemeButton" type="Button" parent="Panel/VBoxContainer" unique_id=-748289894]
+[node name="Spacer" type="Control" parent="Panel/VBoxContainer" unique_id=5844131]
+custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
-size_flags_horizontal = 4
-text = "Import Custom Theme"
-
-[node name="ResetThemeButton" type="Button" parent="Panel/VBoxContainer" unique_id=1234567891]
-layout_mode = 2
-size_flags_horizontal = 4
-text = "Reset to Default Theme"
 
 [node name="StartButton" type="Button" parent="Panel/VBoxContainer" unique_id=280689421]
 layout_mode = 2
 size_flags_horizontal = 4
 text = "Start Game"
-
-[node name="Spacer" type="Control" parent="Panel/VBoxContainer" unique_id=5844131]
-custom_minimum_size = Vector2(0, 40)
-layout_mode = 2
-
-[node name="ExitButton" type="Button" parent="Panel/VBoxContainer" unique_id=1013701361]
-layout_mode = 2
-size_flags_horizontal = 4
-text = "Exit Game"
 
 [node name="ThemeLogo" type="Sprite2D" parent="." unique_id=301754130]
 unique_name_in_owner = true
@@ -145,16 +164,15 @@ position = Vector2(245.00002, 221)
 
 [node name="ThemeFileDialog" type="FileDialog" parent="." unique_id=1234567890]
 unique_name_in_owner = true
-title = "Select Theme Folder to Import"
+title = "Open a Directory"
 size = Vector2i(600, 400)
 ok_button_text = "Import"
 file_mode = 2
 access = 1
 use_native_dialog = true
 
+[connection signal="pressed" from="ExitContainer/ExitButton" to="." method="_on_exit_button_pressed"]
+[connection signal="pressed" from="ThemeContainer/VBoxContainer/ThemeButton" to="." method="_on_theme_button_pressed"]
+[connection signal="pressed" from="ThemeContainer/VBoxContainer/ResetThemeButton" to="." method="_on_reset_theme_button_pressed"]
 [connection signal="value_changed" from="Panel/VBoxContainer/PairsSlider" to="." method="_on_pairs_slider_value_changed"]
-[connection signal="pressed" from="Panel/VBoxContainer/ThemeButton" to="." method="_on_theme_button_pressed"]
-[connection signal="pressed" from="Panel/VBoxContainer/ResetThemeButton" to="." method="_on_reset_theme_button_pressed"]
 [connection signal="pressed" from="Panel/VBoxContainer/StartButton" to="." method="_on_start_button_pressed"]
-[connection signal="pressed" from="Panel/VBoxContainer/ExitButton" to="." method="_on_exit_button_pressed"]
-[connection signal="dir_selected" from="ThemeFileDialog" to="." method="_on_theme_dialog_dir_selected"]

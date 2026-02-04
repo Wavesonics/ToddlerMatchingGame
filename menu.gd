@@ -7,7 +7,15 @@ var selected_pairs: int = 8
 @onready var pairs_label = %PairsLabel
 @onready var theme_logo = %ThemeLogo
 
+var _file_picker: AndroidFilePicker = null
+
 func _ready() -> void:
+	# Setup file picker
+	_file_picker = AndroidFilePicker.new()
+	_file_picker.directory_selected.connect(_on_directory_selected)
+	_file_picker.selection_cancelled.connect(_on_selection_cancelled)
+	add_child(_file_picker)
+
 	load_theme_logo()
 	max_pairs = count_available_images()
 	pairs_slider.tick_count = max_pairs - 1
@@ -110,9 +118,12 @@ func validate_theme_directory(path: String) -> Dictionary:
 	return result
 
 func _on_theme_button_pressed() -> void:
-	%ThemeFileDialog.popup_centered()
+	if _file_picker:
+		_file_picker.open_directory_picker()
+	else:
+		show_error_dialog("File picker not initialized")
 
-func _on_theme_dialog_dir_selected(path: String) -> void:
+func _on_directory_selected(path: String) -> void:
 	var validation = validate_theme_directory(path)
 
 	if validation.valid:
@@ -290,3 +301,6 @@ func show_success_dialog(message: String) -> void:
 	dialog.popup_centered()
 	await dialog.confirmed
 	dialog.queue_free()
+
+func _on_selection_cancelled() -> void:
+	print("File selection cancelled")

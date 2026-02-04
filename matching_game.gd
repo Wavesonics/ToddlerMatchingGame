@@ -1,6 +1,12 @@
-extends Node2D
+extends Control
 
 const CARD_SCENE = preload("res://card.tscn")
+
+const MARGIN_TOP = 80
+const MARGIN_BOTTOM = 20
+const MARGIN_LEFT = 50
+const MARGIN_RIGHT = 50
+const CARD_GAP = 4
 
 var cards: Array = []
 var first_card = null
@@ -14,7 +20,7 @@ var grid_rows: int = 4
 
 @onready var score_label = %ScoreLabel
 @onready var flips_label = %FlipsLabel
-@onready var grid_container = %GridContainer
+@onready var card_container = %CardContainer
 @onready var victory_panel = %VictoryPanel
 @onready var victory_label = %VictoryLabel
 @onready var stats_label = %StatsLabel
@@ -27,6 +33,22 @@ var grid_rows: int = 4
 func _ready() -> void:
 	pairs_count = GameSettings.pairs_to_match
 	setup_game()
+	position_fireworks()
+	get_tree().root.size_changed.connect(_on_window_resized)
+
+func _on_window_resized() -> void:
+	if cards.size() == 0:
+		return
+	var layout = calculate_card_layout(cards.size())
+	for i in range(cards.size()):
+		position_card(cards[i], i, layout)
+	position_fireworks()
+
+func position_fireworks() -> void:
+	var viewport_size = get_viewport().get_visible_rect().size
+	fireworks1.position = Vector2(viewport_size.x * 0.25, viewport_size.y * 0.7)
+	fireworks2.position = Vector2(viewport_size.x * 0.5, viewport_size.y * 0.6)
+	fireworks3.position = Vector2(viewport_size.x * 0.75, viewport_size.y * 0.7)
 
 func calculate_grid_dimensions(total_cards: int) -> Vector2i:
 	# Try to make grid as square as possible
@@ -42,6 +64,46 @@ func calculate_grid_dimensions(total_cards: int) -> Vector2i:
 
 	return Vector2i(cols, rows)
 
+func calculate_card_layout(total_cards: int) -> Dictionary:
+	var viewport_size = get_viewport().get_visible_rect().size
+
+	# Available space for cards
+	var available_width = viewport_size.x - MARGIN_LEFT - MARGIN_RIGHT
+	var available_height = viewport_size.y - MARGIN_TOP - MARGIN_BOTTOM
+
+	# Calculate grid dimensions
+	var grid_dims = calculate_grid_dimensions(total_cards)
+	var cols = grid_dims.x
+	var rows = grid_dims.y
+
+	# Card size considering gaps
+	var card_width = (available_width - (cols - 1) * CARD_GAP) / cols
+	var card_height = (available_height - (rows - 1) * CARD_GAP) / rows
+
+	# Keep cards square, use smaller dimension
+	var card_size = min(card_width, card_height)
+
+	# Calculate grid offset to center it
+	var grid_width = cols * card_size + (cols - 1) * CARD_GAP
+	var grid_height = rows * card_size + (rows - 1) * CARD_GAP
+	var start_x = MARGIN_LEFT + (available_width - grid_width) / 2
+	var start_y = MARGIN_TOP + (available_height - grid_height) / 2
+
+	return {
+		"card_size": Vector2(card_size, card_size),
+		"start_pos": Vector2(start_x, start_y),
+		"cols": cols,
+		"rows": rows
+	}
+
+func position_card(card: Node2D, index: int, layout: Dictionary) -> void:
+	var col = index % layout.cols
+	var row = index / layout.cols
+	var x = layout.start_pos.x + col * (layout.card_size.x + CARD_GAP)
+	var y = layout.start_pos.y + row * (layout.card_size.y + CARD_GAP)
+	card.position = Vector2(x, y)
+	card.set_card_size(layout.card_size)
+
 func setup_game() -> void:
 	var card_images = load_card_images()
 
@@ -55,24 +117,26 @@ func setup_game() -> void:
 	var game_cards = selected_images + selected_images
 	game_cards.shuffle()
 
-	# Calculate grid dimensions
+	# Calculate grid dimensions and layout
 	var total_cards = pairs_count * 2
 	var dimensions = calculate_grid_dimensions(total_cards)
 	grid_columns = dimensions.x
 	grid_rows = dimensions.y
-	grid_container.columns = grid_columns
+
+	var layout = calculate_card_layout(total_cards)
 
 	# Load back texture if it exists
 	var back_texture = null
 	if FileAccess.file_exists("res://card-back.png"):
 		back_texture = load("res://card-back.png")
 
-	# Create grid
+	# Create cards
 	for i in range(total_cards):
 		var card = CARD_SCENE.instantiate()
 		card.setup(i, game_cards[i], back_texture)
 		card.card_clicked.connect(_on_card_clicked)
-		grid_container.add_child(card)
+		card_container.add_child(card)
+		position_card(card, i, layout)
 		cards.append(card)
 
 	update_ui()

@@ -1,4 +1,4 @@
-extends Control
+extends Node2D
 
 signal card_clicked(card)
 
@@ -9,6 +9,7 @@ var front_texture: Texture2D
 var back_texture: Texture2D
 var is_flipping: bool = false
 var setup_complete: bool = false
+var card_size: Vector2 = Vector2(150, 150)
 
 @onready var card_3d = %Card3D
 @onready var front_sprite = %FrontSprite
@@ -17,6 +18,8 @@ var setup_complete: bool = false
 @onready var card_background = %CardBackground
 @onready var match_particles = %MatchParticles
 @onready var flip_sound = %FlipSound
+@onready var card_button = $CardButton
+@onready var viewport_container = $SubViewportContainer
 
 func _ready() -> void:
 	# Ensure each card has its own world
@@ -36,7 +39,25 @@ func _ready() -> void:
 		else:
 			back_sprite.visible = false
 		card_3d.rotation_degrees.y = 0
+
+	# Apply stored card size
+	_apply_card_size()
 	setup_complete = true
+
+func set_card_size(size: Vector2) -> void:
+	card_size = size
+	if setup_complete:
+		_apply_card_size()
+
+func _apply_card_size() -> void:
+	# Resize button to match
+	card_button.position = Vector2.ZERO
+	card_button.size = card_size
+	# Resize SubViewportContainer
+	viewport_container.position = Vector2.ZERO
+	viewport_container.size = card_size
+	# Update SubViewport resolution
+	viewport.size = Vector2i(card_size)
 
 func setup(id: int, front: Texture2D, back: Texture2D) -> void:
 	card_id = id

@@ -1,4 +1,4 @@
-extends Node2D
+extends Control
 
 var max_pairs: int = 18
 var selected_pairs: int = 8
@@ -6,16 +6,10 @@ var selected_pairs: int = 8
 @onready var pairs_slider = %PairsSlider
 @onready var pairs_label = %PairsLabel
 @onready var theme_logo = %ThemeLogo
-
-var _file_picker: AndroidFilePicker = null
+@onready var snow_particles = $SnowParticles
+@onready var snow_particles2 = $SnowParticles2
 
 func _ready() -> void:
-	# Setup file picker
-	_file_picker = AndroidFilePicker.new()
-	_file_picker.directory_selected.connect(_on_directory_selected)
-	_file_picker.selection_cancelled.connect(_on_selection_cancelled)
-	add_child(_file_picker)
-
 	load_theme_logo()
 	max_pairs = count_available_images()
 	pairs_slider.tick_count = max_pairs - 1
@@ -24,6 +18,26 @@ func _ready() -> void:
 	pairs_slider.value = min(8, max_pairs)
 	selected_pairs = int(pairs_slider.value)
 	update_label()
+	position_elements()
+	get_tree().root.size_changed.connect(_on_window_resized)
+
+func _on_window_resized() -> void:
+	position_elements()
+
+func position_elements() -> void:
+	var viewport_size = get_viewport().get_visible_rect().size
+	# Position logo on the left side, vertically centered
+	theme_logo.position = Vector2(viewport_size.x * 0.21, viewport_size.y * 0.34)
+	# Position snow particles to span the window width
+	snow_particles.position = Vector2(viewport_size.x * 0.5, -10)
+	snow_particles2.position = Vector2(viewport_size.x * 0.5, -10)
+	# Update particle emission width to match viewport
+	var material1 = snow_particles.process_material as ParticleProcessMaterial
+	var material2 = snow_particles2.process_material as ParticleProcessMaterial
+	if material1:
+		material1.emission_box_extents = Vector3(viewport_size.x * 0.5, 1, 1)
+	if material2:
+		material2.emission_box_extents = Vector3(viewport_size.x * 0.5, 1, 1)
 
 func count_available_images() -> int:
 	var count = 0
@@ -118,10 +132,11 @@ func validate_theme_directory(path: String) -> Dictionary:
 	return result
 
 func _on_theme_button_pressed() -> void:
-	if _file_picker:
-		_file_picker.open_directory_picker()
-	else:
-		show_error_dialog("File picker not initialized")
+	pass
+	#if _file_picker:
+		#_file_picker.open_directory_picker()
+	#else:
+		#show_error_dialog("File picker not initialized")
 
 func _on_directory_selected(path: String) -> void:
 	var validation = validate_theme_directory(path)

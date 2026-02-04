@@ -8,7 +8,7 @@ background_mode = 1
 background_color = Color(0.9, 0.9, 0.95, 1)
 
 [sub_resource type="QuadMesh" id="QuadMesh_1"]
-size = Vector2(1.3, 1.3)
+size = Vector2(1.9, 1.9)
 
 [sub_resource type="Shader" id="Shader_1"]
 code = "shader_type spatial;
@@ -83,32 +83,19 @@ albedo_color = Color(1, 0.9, 0.3, 1)
 material = SubResource("StandardMaterial3D_2")
 size = Vector2(0.05, 0.05)
 
-[node name="Card" type="Control" unique_id=470992462]
-custom_minimum_size = Vector2(150, 150)
-layout_mode = 3
-anchors_preset = 0
-size_flags_horizontal = 4
-size_flags_vertical = 4
+[node name="Card" type="Node2D" unique_id=470992462]
 script = ExtResource("1_card")
 
-[node name="CardButton" type="Button" parent="." unique_id=477051566]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-flat = true
-
 [node name="SubViewportContainer" type="SubViewportContainer" parent="." unique_id=1455562944]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+offset_right = 150.0
+offset_bottom = 150.0
 mouse_filter = 2
 stretch = true
+
+[node name="CardButton" type="Button" parent="." unique_id=477051566]
+offset_right = 150.0
+offset_bottom = 150.0
+flat = true
 
 [node name="SubViewport" type="SubViewport" parent="SubViewportContainer" unique_id=1443525212]
 unique_name_in_owner = true
@@ -140,7 +127,7 @@ pixel_size = 0.0015
 [node name="FrontSprite" type="Sprite3D" parent="SubViewportContainer/SubViewport/Card3D" unique_id=865340072]
 unique_name_in_owner = true
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, -0.001)
-pixel_size = 0.0015
+pixel_size = 0.0025
 
 [node name="MatchParticles" type="GPUParticles3D" parent="SubViewportContainer/SubViewport/Card3D" unique_id=1234567890]
 unique_name_in_owner = true
